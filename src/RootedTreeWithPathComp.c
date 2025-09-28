@@ -38,58 +38,35 @@ int MakeSet(int iIndex)
 {
     AssertValidIndex(iIndex, __FUNCTION__); 
 
-    g_data[iIndex].m_iParentIndex = -1;
+    g_data[iIndex].m_iParentIndex = iIndex;
     return iIndex;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-int FindParent(int iIndex)
+int FindParentWithPathComp(int iIndex)
 {
     AssertValidIndex(iIndex, __FUNCTION__); 
 
-    if(g_data[iIndex].m_iParentIndex < 0)
-        return iIndex;
-    else
-        return FindParent(g_data[iIndex].m_iParentIndex);
+    int iParent = g_data[iIndex].m_iParentIndex;
+    
+    // if this node is not its parent. ( i.e. root node. ) find check its parent & recurse till we get to peak parent.
+    if(iParent != iIndex)
+        g_data[iIndex].m_iParentIndex = FindParentWithPathComp(g_data[iIndex].m_iParentIndex);
+
+    return iParent;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-int Union(int iParentNodeIndex1, int iParentNodeIndex2)
+int Union(int iParentIndex, int iChildIndex)
 {
-    AssertValidIndex(iParentNodeIndex1, __FUNCTION__); AssertValidIndex(iParentNodeIndex2, __FUNCTION__);
+    AssertValidIndex(iParentIndex, __FUNCTION__); AssertValidIndex(iChildIndex, __FUNCTION__);
 
-    // If this is node of some other set, then first find root node of that set.
-    if(g_data[iParentNodeIndex1].m_iParentIndex >= 0)
-        iParentNodeIndex1 = FindParent(iParentNodeIndex1);
-
-    if(g_data[iParentNodeIndex2].m_iParentIndex >= 0)
-        iParentNodeIndex2 = FindParent(iParentNodeIndex2);
-
-    AssertValidIndex(iParentNodeIndex1, __FUNCTION__); AssertValidIndex(iParentNodeIndex2, __FUNCTION__);
-
-    int iHeightSet1 = abs(g_data[iParentNodeIndex1].m_iParentIndex);
-    int iHeightSet2 = abs(g_data[iParentNodeIndex2].m_iParentIndex);
-
-    if(iHeightSet1 > iHeightSet2)
-    {
-        g_data[iParentNodeIndex2].m_iParentIndex = iParentNodeIndex1;
-        return iParentNodeIndex1;
-    }
-    else if(iHeightSet2 > iHeightSet1)
-    {
-        g_data[iParentNodeIndex1].m_iParentIndex = iParentNodeIndex2;
-        return iParentNodeIndex2;
-    }
-    else 
-    {
-        g_data[iParentNodeIndex2].m_iParentIndex = iParentNodeIndex1;
-        g_data[iParentNodeIndex1].m_iParentIndex -= 1; // Increment height
-        return iParentNodeIndex1;
-    }
+    g_data[iChildIndex].m_iParentIndex = iParentIndex;
+    return iParentIndex;
 }
 
 
@@ -111,7 +88,7 @@ int main(void)
 
     for(int i = 0; i < nData; i++)
     {
-        printf("Parent for index [ %d ] -> [ %d ]\n", i, FindParent(i));
+        printf("Parent for index [ %d ] -> [ %d ]\n", i, FindParentWithPathComp(i));
     }
 
 
