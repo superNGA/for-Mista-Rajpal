@@ -1,2 +1,9 @@
 *.exe
 src/Test.txt
+/ForMistaRajpal/.vs
+/ForMistaRajpal/src/.vs
+/ForMistaRajpal/ForMistaRajpal/x64
+*.vcxproj
+*.sln
+*.filters
+*.user
